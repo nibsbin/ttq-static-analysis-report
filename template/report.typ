@@ -8,35 +8,15 @@
 // 1. COVER PAGE - MobSF BRANDED DESIGN
 // ========================================
 
-// Dark Hero Header
+// User-Defined Banner with Dark Background
 #block(
   width: 100%,
-  height: 180pt,
   fill: rgb("#3E4149"),
-  inset: 0pt,
-  outset: (x: -0.6in, top: -0.6in),
+  inset: 18pt,
+  outset: (x: -0.4in, top: -0.4in),
   breakable: false,
   {
-    place(center + horizon, {
-      // Platform Icons
-      align(center, {
-        box(height: 18pt, baseline: 20%, image("../src/assets/solid/mobile-android.svg", height: 18pt))
-        h(8pt)
-        box(height: 18pt, baseline: 20%, image("../src/assets/solid/apple-whole.svg", height: 18pt))
-        h(8pt)
-        box(height: 18pt, baseline: 20%, image("../src/assets/solid/laptop.svg", height: 18pt))
-      })
-
-      v(12pt)
-
-      // MobSF Logo Text
-      text(size: 56pt, weight: "bold", fill: white, [M#text(fill: rgb("#CCCCCC"), [o])B#text(size: 56pt, weight: "bold", [SF])])
-
-      v(8pt)
-
-      // Subtitle
-      text(size: 12pt, weight: "medium", fill: rgb("#D0D4D9"), tracking: 1pt, upper([IOS Static Analysis Report]))
-    })
+    image("assets/mobSF_banner.png", width: 100%)
   }
 )
 
@@ -57,7 +37,11 @@
   v(12pt)
 
   // App Name
-  text(size: 14pt, weight: "medium", fill: rgb("#1A1F28"), [🍎 SPOTLITE (1.0.5)])
+  align(center, {
+    box(height: 13pt, baseline: 15%, image("../src/assets/solid/apple.svg", height: 13pt))
+    h(4pt)
+    text(size: 14pt, weight: "medium", fill: rgb("#1A1F28"), [SPOTLITE (1.0.5)])
+  })
 })
 
 #v(25pt)
@@ -65,21 +49,25 @@
 // File Information Grid
 #align(center, {
   block(
-    width: 85%,
+    width: 78%,
+    inset: 16pt,
+    radius: 6pt,
+    fill: rgb("#F8F9FA"),
+    stroke: 1pt + rgb("#E5E7EB"),
     {
       grid(
         columns: (auto, 1fr),
-        row-gutter: 8pt,
-        column-gutter: 15pt,
+        row-gutter: 10pt,
+        column-gutter: 18pt,
         align: (left, left),
 
-        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [File Name:]),
-        text(fill: rgb("#2563EB"), size: 9.5pt, [SPOTLITE_v1.0.5.ipa]),
+        text(weight: "semibold", fill: rgb("#64748B"), size: 9.5pt, [File Name:]),
+        text(fill: rgb("#2563EB"), size: 9.5pt, font: "Courier New", [SPOTLITE_v1.0.5.ipa]),
 
-        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [Identifier:]),
-        text(fill: rgb("#2563EB"), size: 9.5pt, [com.example.spotlite]),
+        text(weight: "semibold", fill: rgb("#64748B"), size: 9.5pt, [Identifier:]),
+        text(fill: rgb("#2563EB"), size: 9.5pt, font: "Courier New", [com.example.spotlite]),
 
-        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [Scan Date:]),
+        text(weight: "semibold", fill: rgb("#64748B"), size: 9.5pt, [Scan Date:]),
         text(fill: rgb("#1A1F28"), size: 9.5pt, [July 3, 2025, 9:28 pm]),
       )
     }
@@ -97,23 +85,19 @@
 
 #v(30pt)
 
-// Divider
-#line(length: 100%, stroke: 2pt + black)
-
-#v(20pt)
-
 // Grade Badge
 #align(center, {
-  text(weight: "medium", fill: rgb("#4B5563"), size: 10pt, [Grade:])
-  v(10pt)
   box(
-    width: 60pt,
-    height: 60pt,
+    width: 64pt,
+    height: 64pt,
     fill: rgb("#EAB308"),
-    radius: 4pt,
-    align(center + horizon, text(size: 36pt, weight: "bold", fill: white, [B]))
+    radius: 8pt,
+    stroke: 2pt + rgb("#CA8A04"),
+    align(center + horizon, text(size: 38pt, weight: "bold", fill: white, [B]))
   )
 })
+
+#v(20pt)
 
 #pagebreak()
 
@@ -294,18 +278,18 @@
 
 #block(
   width: 100%,
-  inset: 12pt,
-  stroke: 1.5pt + rgb("#DC2626"),
-  fill: rgb("#FEF3C7"),
-  radius: 3pt,
+  inset: 14pt,
+  stroke: (left: 4pt + rgb("#DC2626"), rest: 1pt + rgb("#F3D5D5")),
+  fill: rgb("#FEF7F7"),
+  radius: 4pt,
   [
     #box(height: 14pt, baseline: 17%, image("../src/assets/solid/triangle-exclamation.svg", height: 14pt))
     #h(7pt)
-    #text(size: 11pt, weight: "bold", fill: rgb("#DC2626"), [WARNING: OFAC Sanctioned Countries])
+    #text(size: 11pt, weight: "bold", fill: rgb("#B91C1C"), [WARNING: OFAC Sanctioned Countries])
 
-    #v(5pt)
+    #v(6pt)
 
-    This application communicates with domains located in or associated with OFAC sanctioned countries. This may violate compliance requirements.
+    #text(size: 10pt, fill: rgb("#1A1F28"), [This application communicates with domains located in or associated with OFAC sanctioned countries. This may violate compliance requirements.])
   ]
 )
 

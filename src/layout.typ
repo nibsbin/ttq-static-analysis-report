@@ -9,7 +9,7 @@
   // Light backgrounds - clean whites and off-whites
   bg-dark: rgb("#FFFFFF"),      // Pure white for main background
   bg-darker: rgb("#F8F9FA"),    // Slightly off-white for subtle contrast
-  bg-card: rgb("#F6F6F6"),      // Light gray for card/panel backgrounds
+  bg-card: rgb("#F9FAFB"),      // Very light gray for card backgrounds (subtler)
 
   // Grays for UI elements
   border: rgb("#D0D4D9"),       // Medium gray for borders
@@ -24,12 +24,18 @@
 // Secondary Palette (UI Elements - 30%)
 #let secondary = (
   // Light grays for non-critical UI
-  surface: rgb("#EBEEF1"),      // Table headers, sidebars
-  surface-hover: rgb("#E5E7EB"), // Hover states
+  surface: rgb("#E5E8EC"),      // Table headers - darker for better contrast
+  surface-hover: rgb("#D8DCE3"), // Hover states
 
   // Blue for links and interactive elements
   link: rgb("#2563EB"),         // Strong blue for hyperlinks
   link-hover: rgb("#1D4ED8"),   // Darker blue on hover
+
+  // Accent color for section headers
+  header-accent: rgb("#3F4A5A"), // Darker slate for header underlines
+
+  // Warning/alert backgrounds
+  warning-bg: rgb("#FEF9E7"),   // Softer yellow for warning backgrounds
 )
 
 // Accent Palette (Severity/Status - 10%)
@@ -62,7 +68,7 @@
   leading: 0.65em, // Global spacing value (vertical rhythm)
   section-spacing: 11pt,
   entry-spacing: 8pt,
-  margin: 0.6in,
+  margin: 0.4in,
   table-stroke: 0.75pt + neutral.border,
 
   // Semantic color system
@@ -83,6 +89,8 @@
     text-secondary: neutral.text-secondary,
     border: neutral.border,
     link: secondary.link,
+    header-accent: secondary.header-accent,
+    warning-bg: secondary.warning-bg,
   ),
 )
 

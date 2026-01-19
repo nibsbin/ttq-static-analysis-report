@@ -15,7 +15,7 @@
 
 // Horizontal Rule
 #let hrule = {
-  line(length: 100%, stroke: 1.25pt + config.colors.border)
+  line(length: 100%, stroke: 2pt + config.colors.header-accent)
 }
 
 // Severity Badge - Returns colored text based on severity level
@@ -37,11 +37,11 @@
   }
 
   box(
-    fill: color.lighten(87%),
-    outset: (x: 6pt, y: 2.5pt),
-    radius: 3pt,
-    stroke: 1.1pt + color,
-    text(fill: color, weight: "bold", size: 8.5pt, upper(level))
+    fill: color.lighten(85%),
+    outset: (x: 7pt, y: 3pt),
+    radius: 3.5pt,
+    stroke: 1.2pt + color,
+    text(fill: color.darken(10%), weight: "bold", size: 8pt, upper(level))
   )
 }
 
@@ -54,8 +54,20 @@
   app-name: "",
   app-icon: none,
   metadata: (:),
+  banner: none,
 ) = {
   set align(center)
+  
+  // Custom Banner (if provided)
+  if banner != none {
+    block(
+      width: 100%,
+      {
+        image(banner, width: 100%)
+      }
+    )
+    vgap(config.section-spacing * 1.5)
+  }
 
   // Title/Branding
   block({
@@ -178,20 +190,20 @@
 
   block(
     width: 100%,
-    inset: 13pt,
-    radius: 4pt,
+    inset: 14pt,
+    radius: 5pt,
     stroke: 1pt + config.colors.border,
     fill: config.colors.bg-primary,
     {
       let items = data.pairs().map(((key, value)) => (
-        text(weight: "bold", fill: config.colors.text-primary, size: 10pt, key + ":"),
+        text(weight: "bold", fill: config.colors.text-secondary, size: 10pt, key + ":"),
         text(fill: config.colors.text-primary, size: 10pt, value),
       )).flatten()
 
       grid(
         columns: (auto, 1fr) * columns,
-        row-gutter: 0.65em,
-        column-gutter: 2em,
+        row-gutter: 0.7em,
+        column-gutter: 2.5em,
         ..items
       )
     }
