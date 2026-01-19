@@ -1,26 +1,27 @@
 [package]
-name = "ttq-classic-resume"
+name = "ttq-static-analysis-report"
 version = "0.1.0"
 compiler = "0.14.0"
 entrypoint = "src/lib.typ"
-repository = "https://github.com/nibsbin/ttq-classic-resume"
+repository = "https://github.com/nibsbin/ttq-static-analysis-report"
 authors = ["Nibs"]
 license = "MIT"
-description = "A clean and modern resume."
+description = "A comprehensive static analysis security report template for mobile and application security frameworks."
 
 keywords = [
-    "resume",
-    "cv",
-    "curriculum vitae",
-    "job",
-    "career",
-    "professional",
+    "security",
+    "analysis",
+    "report",
+    "mobsf",
+    "vulnerability",
+    "assessment",
+    "audit",
     "template",
 ]
-categories = ["cv"]
-disciplines = ["business", "computer-science", "engineering", "communication"]
+categories = ["report"]
+disciplines = ["computer-science", "engineering"]
 
 [template]
 path = "template"
-entrypoint = "resume.typ"
+entrypoint = "report.typ"
 thumbnail = "thumbnail.png"

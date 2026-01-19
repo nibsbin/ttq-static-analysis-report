@@ -1,5 +1,5 @@
 // lib.typ
-// Classic Resume Template Logic
+// Static Analysis Report Template Logic
 
-#import "layout.typ": config, resume
-#import "components.typ": project-entry, resume-header, section-header, table, timeline-entry
+#import "layout.typ": config, report
+#import "components.typ": binary-table, domain-table, log-table, metadata-block, recon-table, report-header, scorecard, section-header, security-table, severity-badge

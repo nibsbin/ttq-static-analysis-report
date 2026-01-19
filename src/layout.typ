@@ -1,23 +1,36 @@
 // layout.typ
 
+// --- Severity Color Scheme ---
+#let severity-colors = (
+  high: rgb("#DC3545"),      // Red for critical/high severity
+  warning: rgb("#FD7E14"),   // Orange for warnings
+  info: rgb("#0D6EFD"),      // Blue for informational
+  secure: rgb("#198754"),    // Green for secure/safe
+  hotspot: rgb("#6C757D"),   // Gray for hotspots
+)
+
 // --- Configurations ---
 #let config = (
-  font: "eb garamond",
-  base-size: 12pt,
+  font: "Arial",  // Changed to sans-serif for technical report readability
+  base-size: 10pt,
   leading: 0.5em, // Global spacing value (vertical rhythm)
-  section-spacing: 5pt,
-  entry-spacing: 5pt,
+  section-spacing: 8pt,
+  entry-spacing: 6pt,
   margin: 0.5in,
+  table-stroke: 0.5pt + gray,
+  colors: severity-colors,
 )
 
 // --- Utility Functions ---
 #let vgap(amount) = v(amount)
 
-// --- Resume Show Rule (Global Setup) ---
-#let resume(content) = {
+// --- Report Show Rule (Global Setup) ---
+#let report(content) = {
   set page(
     paper: "us-letter",
     margin: config.margin,
+    numbering: "1",
+    number-align: center,
   )
 
   set text(
@@ -35,8 +48,8 @@
   set block(above: config.leading, below: config.leading)
   set list(spacing: config.leading)
 
-  // Hyperlinks should be standard black text
-  show link: set text(fill: black)
+  // Hyperlinks should be blue and underlined for reports
+  show link: it => text(fill: blue, underline(it))
 
   content
 }
