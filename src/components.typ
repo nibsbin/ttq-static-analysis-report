@@ -535,8 +535,8 @@
         h(7pt)
       }
       text(weight: "bold", size: 12pt, fill: config.colors.text-primary, title)
-    })
-    vgap(0.6em)
+      vgap(0.6em)
+    }, sticky: true)
   }
 
   if items.len() == 0 { return }
