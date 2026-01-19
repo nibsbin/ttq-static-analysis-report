@@ -36,13 +36,13 @@
     black
   }
 
-  box(
+  align(center, box(
     fill: color.lighten(85%),
     outset: (x: 5pt, y: 2pt),
     radius: 3pt,
     stroke: 1pt + color,
     text(fill: color.darken(10%), weight: "bold", size: 7.5pt, upper(level))
-  )
+  ))
 }
 
 // --- Component Exports ---
@@ -232,11 +232,14 @@
     if extra != none {
       text(size: 12pt, weight: "bold", fill: config.colors.text-primary, " " + extra)
     }
-  })
   v(2pt)
   hrule
   v(3pt)
-}// Key-Value Metadata Block
+  })
+
+}
+
+// Key-Value Metadata Block
 #let metadata-block(title: none, data: (:), columns: 1) = {
   vgap(config.entry-spacing)
 
@@ -265,6 +268,44 @@
       )
     }
   )
+}
+
+  v(4pt)
+}
+
+// Base table wrapper - provides consistent styling and breaking behavior
+#let base-table(
+  columns: auto,
+  headers: (),
+  rows: (),
+  align: auto,
+  severity-columns: (), // Array of column indices that contain severity badges
+) = {
+  let default-align = (col, row) => {
+    if row == 0 { center + horizon }
+    else if col in severity-columns { center + horizon }
+    else { left + horizon }
+  }
+  
+  block(breakable: false, {
+    table(
+      columns: columns,
+      stroke: config.table-stroke,
+      inset: config.table-inset,
+      align: if align == auto { default-align } else { align },
+      fill: (col, row) => {
+        if row == 0 {
+          config.colors.bg-secondary
+        } else if calc.rem(row, 2) == 0 {
+          config.colors.bg-primary
+        } else {
+          none
+        }
+      },
+      ..headers,
+      ..rows,
+    )
+  })
 }
 
 // Unified Data Table Component
@@ -327,24 +368,11 @@
     })
   }).flatten()
   
-  table(
+  base-table(
     columns: if columns == auto { final-headers.len() } else { columns },
-    stroke: config.table-stroke,
-    inset: config.table-inset,
-    align: (col, row) => {
-      if row == 0 { center + horizon } else { left + horizon }
-    },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..final-headers.map(h => text(weight: "bold", size: 10pt, h)),
-    ..final-rows,
+    headers: final-headers.map(h => text(weight: "bold", size: 10pt, h)),
+    rows: final-rows,
+    severity-columns: if severity-idx != none { (severity-idx,) } else { () },
   )
 }
 
@@ -371,24 +399,11 @@
     })
   }).flatten()
 
-  table(
+  base-table(
     columns: final-headers.len(),
-    stroke: config.table-stroke,
-    inset: config.table-inset,
-    align: (col, row) => {
-      if row == 0 { center + horizon } else { left + horizon }
-    },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..final-headers,
-    ..final-rows,
+    headers: final-headers,
+    rows: final-rows,
+    severity-columns: if severity-idx != none { (severity-idx,) } else { () },
   )
 }
 
@@ -419,27 +434,17 @@
     severity-badge(entry.encrypted),
   )).flatten()
 
-  table(
+  base-table(
     columns: (auto, 2.8fr, 0.8fr, 0.9fr, 0.7fr, 0.8fr, 0.8fr, 0.9fr),
-    stroke: config.table-stroke,
-    inset: config.table-inset,
+    headers: headers,
+    rows: rows,
+    severity-columns: (2, 3, 4, 5, 6, 7), // All badge columns
     align: (col, row) => {
       if col == 0 { center + horizon }
       else if row == 0 { center + horizon }
       else if col == 1 { left + horizon }
       else { center + horizon }
     },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..headers,
-    ..rows,
   )
 }
 
@@ -462,26 +467,15 @@
     },
   )).flatten()
 
-  table(
+  base-table(
     columns: (auto, 2fr, auto, 3fr),
-    stroke: config.table-stroke,
-    inset: config.table-inset,
+    headers: headers,
+    rows: rows,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 or col == 2 { center + horizon }
       else { left + horizon }
     },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..headers,
-    ..rows,
   )
 }
 
@@ -503,26 +497,15 @@
     },
   )).flatten()
 
-  table(
+  base-table(
     columns: (auto, 1.8fr, 3fr, auto),
-    stroke: config.table-stroke,
-    inset: config.table-inset,
+    headers: headers,
+    rows: rows,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 or col == 3 { center + horizon }
       else { left + horizon }
     },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..headers,
-    ..rows,
   )
 }
 
@@ -550,25 +533,14 @@
     text(size: 9pt, item.source),
   )).flatten()
 
-  table(
+  base-table(
     columns: (auto, 2.5fr, 2fr),
-    stroke: config.table-stroke,
-    inset: config.table-inset,
+    headers: headers,
+    rows: rows,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 { center + horizon }
       else { left + horizon }
     },
-    fill: (col, row) => {
-      if row == 0 {
-        config.colors.bg-secondary
-      } else if calc.rem(row, 2) == 0 {
-        config.colors.bg-primary
-      } else {
-        none
-      }
-    },
-    ..headers,
-    ..rows,
   )
 }
