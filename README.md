@@ -25,7 +25,8 @@ See the [template](template/report.typ) for a complete working example report.
 - **Network Analysis**: Domain malware checks and geolocation tracking
 - **Data Reconnaissance**: Sensitive data discovery (emails, URLs, API keys)
 - **Audit Trail**: Detailed scan execution logs
-- **Color-Coded Severity**: High (red), Warning (orange), Info (blue), Secure (green)
+- **Modern Design System**: Developer-friendly dark mode color palette (60-30-10 rule)
+- **Semantic Colors**: Desaturated, eye-strain-reducing severity indicators
 
 ## Quick Start
 
@@ -156,13 +157,24 @@ Click "Start from template" and search for `ttq-static-analysis-report`.
 
 For complete documentation and examples, see the [template](template/report.typ).
 
+**Design System**: See [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) for detailed color palette documentation and usage guidelines.
+
+**Color Reference**: Compile `color-reference.typ` to generate a visual palette guide:
+```bash
+typst compile color-reference.typ pdfs/color-reference.pdf
+```
+
 ## Severity Levels
 
-- **High**: Critical security flaws (red)
-- **Warning**: Potential issues (orange)
-- **Info**: Informational findings (blue)
-- **Secure**: Security features present (green)
-- **Hotspot**: Areas requiring attention (gray)
+The template uses a modern, developer-friendly color palette with desaturated tones:
+
+- **High**: Critical security flaws (coral red `#F38BA8`)
+- **Warning**: Potential issues (peachy orange `#FAB387`)
+- **Info**: Informational findings (sky blue `#89DCEB`)
+- **Secure**: Security features present (sage green `#A6E3A1`)
+- **Hotspot**: Areas requiring attention (soft purple `#B4BEFE`)
+
+All colors follow dark mode best practices with soft blacks (`#1E1E2E`) and high-contrast text for reduced eye strain.
 
 ## License
 

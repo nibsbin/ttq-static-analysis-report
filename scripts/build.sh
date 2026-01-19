@@ -9,7 +9,7 @@ mkdir -p pdfs
 compile_template() {
   local template=$1
   local input="template/${template}.typ"
-  local output="pdfs/${template}.pdf"
+  local output="pdfs/${template}-{p}.png"
 
   if [ ! -f "$input" ]; then
     echo "Skipping ${template}: template file not found ($input)"
@@ -24,7 +24,7 @@ compile_template() {
   fi
 
   if typst compile --font-path "$font_path" --root . "$input" "$output"; then
-    echo "  ✓ Generated: $(pwd)/$output"
+    echo "  ✓ Generated: $(pwd)/pdfs/${template}-*.png"
   else
     echo "  ✗ Failed to compile $template"
     return 1

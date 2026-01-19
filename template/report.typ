@@ -1,5 +1,5 @@
 // Import the static analysis report template components
-#import "../src/lib.typ": binary-table, domain-table, log-table, metadata-block, recon-table, report, report-header, scorecard, section-header, security-table, severity-badge
+#import "../src/lib.typ": binary-table, data-table, domain-table, log-table, metadata-block, recon-table, report, report-header, scorecard, section-header, security-table, severity-badge
 
 // Apply the report styling to the document
 #show: report

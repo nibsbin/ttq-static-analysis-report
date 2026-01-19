@@ -66,7 +66,7 @@
       width: 100%,
       inset: 10pt,
       stroke: config.table-stroke,
-      fill: rgb("#F8F9FA"),
+      fill: config.colors.bg-primary,
       {
         grid(
           columns: (auto, 1fr),
@@ -90,7 +90,7 @@
     width: 100%,
     inset: 10pt,
     stroke: config.table-stroke,
-    fill: rgb("#F8F9FA"),
+    fill: config.colors.bg-primary,
     {
       // Score Display
       align(center, {
@@ -151,7 +151,7 @@
     width: 100%,
     inset: 8pt,
     stroke: config.table-stroke,
-    fill: rgb("#FAFAFA"),
+    fill: config.colors.bg-primary,
     {
       let items = data.pairs().map(((key, value)) => (
         text(weight: "bold", key + ":"),
@@ -168,150 +168,158 @@
   )
 }
 
-// Security Analysis Table
-#let security-table(
+// Unified Data Table Component
+// Flexible table with auto-numbering, severity highlighting, and customizable columns
+#let data-table(
   headers: (),
   rows: (),
+  columns: auto,  // Can be array of sizes or auto
   severity-column: none,
+  auto-number: false,
+  title: none,
+  transform: none,  // Optional row transformation function
 ) = {
   vgap(config.entry-spacing)
   
+  if rows.len() == 0 { return }
+  
+  // Add title if provided
+  if title != none {
+    text(weight: "bold", title)
+    vgap(0.3em)
+  }
+  
+  // Auto-numbering adds a "NO" column
+  let final-headers = if auto-number {
+    ([*NO*],) + headers.map(h => text(weight: "bold", h))
+  } else {
+    headers.map(h => text(weight: "bold", h))
+  }
+  
+  // Adjust severity column index if auto-numbering
+  let severity-idx = if severity-column != none and auto-number {
+    severity-column + 1
+  } else {
+    severity-column
+  }
+  
+  // Process rows
+  let final-rows = rows.enumerate().map(((idx, row)) => {
+    let processed-row = if transform != none {
+      transform(row, idx)
+    } else {
+      row
+    }
+    
+    // Add auto-number if enabled
+    let numbered-row = if auto-number {
+      (str(idx + 1),) + processed-row
+    } else {
+      processed-row
+    }
+    
+    // Apply severity highlighting
+    numbered-row.enumerate().map(((i, cell)) => {
+      if severity-idx != none and i == severity-idx {
+        severity-badge(cell)
+      } else {
+        cell
+      }
+    })
+  }).flatten()
+  
   table(
-    columns: headers.len(),
+    columns: if columns == auto { final-headers.len() } else { columns },
     stroke: config.table-stroke,
     align: (col, row) => {
       if row == 0 { center } else { left }
     },
     fill: (col, row) => {
-      if row == 0 { rgb("#E9ECEF") } else if calc.rem(row, 2) == 0 { rgb("#F8F9FA") } else { white }
+      if row == 0 { config.colors.bg-secondary } else if calc.rem(row, 2) == 0 { config.colors.bg-primary } else { white }
     },
-    // Headers
-    ..headers.map(h => text(weight: "bold", h)),
-    // Rows
-    ..rows.map(row => {
-      row.enumerate().map(((i, cell)) => {
-        if severity-column != none and i == severity-column {
-          severity-badge(cell)
-        } else {
-          cell
-        }
-      })
-    }).flatten()
+    ..final-headers,
+    ..final-rows,
   )
 }
 
-// Binary/Framework Analysis Table
+// Convenience wrappers for common table types (backward compatibility)
+
+#let security-table(headers: (), rows: (), severity-column: none) = {
+  data-table(
+    headers: headers,
+    rows: rows,
+    severity-column: severity-column,
+    auto-number: true,
+  )
+}
+
 #let binary-table(entries: ()) = {
-  vgap(config.entry-spacing)
-  
-  if entries.len() == 0 { return }
-  
-  table(
+  data-table(
+    headers: ([*DYLIB/FRAMEWORK*], [*NX*], [*STACK CANARY*], [*ARC*], [*RPATH*], [*CODE SIG*], [*ENCRYPTED*], [*SYMBOLS*]),
     columns: (auto, 1fr, auto, auto, auto, auto, auto, auto, auto),
-    stroke: config.table-stroke,
-    align: (col, row) => {
-      if row == 0 or col == 0 { center } else { left }
-    },
-    fill: (col, row) => {
-      if row == 0 { rgb("#E9ECEF") } else if calc.rem(row, 2) == 0 { rgb("#F8F9FA") } else { white }
-    },
-    // Headers
-    [*NO*], [*DYLIB/FRAMEWORK*], [*NX*], [*STACK CANARY*], [*ARC*], [*RPATH*], [*CODE SIG*], [*ENCRYPTED*], [*SYMBOLS*],
-    // Data rows
-    ..entries.enumerate().map(((idx, entry)) => (
-      str(idx + 1),
+    auto-number: true,
+    rows: entries,
+    transform: (entry, idx) => (
       text(size: 8pt, font: "Courier New", entry.path),
-      severity-badge(entry.nx),
-      severity-badge(entry.stack-canary),
-      severity-badge(entry.arc),
-      severity-badge(entry.rpath),
-      severity-badge(entry.code-signature),
-      severity-badge(entry.encrypted),
-      severity-badge(entry.symbols),
-    )).flatten()
+      entry.nx,
+      entry.at("stack-canary"),
+      entry.arc,
+      entry.rpath,
+      entry.at("code-signature"),
+      entry.encrypted,
+      entry.symbols,
+    ),
+    severity-column: none,  // All columns are severity-colored via transform
   )
 }
 
-// Domain/Network Analysis Table
 #let domain-table(domains: ()) = {
-  vgap(config.entry-spacing)
-  
-  if domains.len() == 0 { return }
-  
-  table(
+  data-table(
+    headers: ([*DOMAIN*], [*STATUS*], [*GEOLOCATION*]),
     columns: (auto, 2fr, auto, 3fr),
-    stroke: config.table-stroke,
-    align: (col, row) => {
-      if row == 0 { center } else { left }
-    },
-    fill: (col, row) => {
-      if row == 0 { rgb("#E9ECEF") } else if calc.rem(row, 2) == 0 { rgb("#F8F9FA") } else { white }
-    },
-    [*NO*], [*DOMAIN*], [*STATUS*], [*GEOLOCATION*],
-    ..domains.enumerate().map(((idx, domain)) => (
-      str(idx + 1),
+    auto-number: true,
+    rows: domains,
+    transform: (domain, idx) => (
       text(font: "Courier New", domain.url),
       domain.status,
-      {
-        if "geolocation" in domain {
-          let geo = domain.geolocation
-          [IP: #geo.ip | Country: #geo.country | City: #geo.city]
-        } else {
-          [N/A]
-        }
+      if "geolocation" in domain {
+        let geo = domain.geolocation
+        [IP: #geo.ip | Country: #geo.country | City: #geo.city]
+      } else {
+        [N/A]
       },
-    )).flatten()
+    ),
   )
 }
 
-// Audit Log Table
 #let log-table(logs: ()) = {
-  vgap(config.entry-spacing)
-  
-  if logs.len() == 0 { return }
-  
-  table(
+  data-table(
+    headers: ([*TIMESTAMP*], [*EVENT*], [*STATUS*]),
     columns: (auto, 2fr, 4fr, auto),
-    stroke: config.table-stroke,
-    align: (col, row) => {
-      if row == 0 { center } else { left }
-    },
-    fill: (col, row) => {
-      if row == 0 { rgb("#E9ECEF") } else if calc.rem(row, 2) == 0 { rgb("#F8F9FA") } else { white }
-    },
-    [*NO*], [*TIMESTAMP*], [*EVENT*], [*STATUS*],
-    ..logs.enumerate().map(((idx, log)) => (
-      str(idx + 1),
+    auto-number: true,
+    rows: logs,
+    transform: (log, idx) => (
       log.timestamp,
       log.event,
-      if log.status == "OK" { text(fill: config.colors.secure, "OK") } else { text(fill: config.colors.high, log.status) },
-    )).flatten()
+      if log.status == "OK" {
+        text(fill: config.colors.secure, "OK")
+      } else {
+        text(fill: config.colors.high, log.status)
+      },
+    ),
   )
 }
 
-// Reconnaissance Data Table (emails, URLs, etc.)
 #let recon-table(title: "Discovered Items", items: (), item-label: "Item", source-label: "Source") = {
-  vgap(config.entry-spacing)
-  
-  if items.len() == 0 { return }
-  
-  text(weight: "bold", title)
-  vgap(0.3em)
-  
-  table(
+  data-table(
+    title: title,
+    headers: ([*#item-label*], [*#source-label*]),
     columns: (auto, 2fr, 3fr),
-    stroke: config.table-stroke,
-    align: (col, row) => {
-      if row == 0 { center } else { left }
-    },
-    fill: (col, row) => {
-      if row == 0 { rgb("#E9ECEF") } else if calc.rem(row, 2) == 0 { rgb("#F8F9FA") } else { white }
-    },
-    [*NO*], [*#item-label*], [*#source-label*],
-    ..items.enumerate().map(((idx, item)) => (
-      str(idx + 1),
+    auto-number: true,
+    rows: items,
+    transform: (item, idx) => (
       text(font: "Courier New", item.value),
       text(size: 8pt, item.source),
-    )).flatten()
+    ),
   )
 }
