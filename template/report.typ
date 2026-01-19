@@ -1,5 +1,6 @@
 // Import the static analysis report template components
-#import "../src/lib.typ": binary-table, data-table, domain-table, log-table, metadata-block, recon-table, report, report-header, scorecard, section-header, security-table, severity-badge
+#import "../src/lib.typ": binary-table, data-table, domain-table, log-table, metadata-block, recon-table, report, report-header, scorecard, section-header, security-table, severity-badge, severity-summary
+#import "../src/layout.typ": config
 
 // Apply the report styling to the document
 #show: report
@@ -12,11 +13,33 @@
 #block(
   width: 100%,
   fill: rgb("#3E4149"),
-  inset: 18pt,
-  outset: (x: -0.4in, top: -0.4in),
+  inset: 0pt,
+  // Pull the banner out to the page edges so it spans the full margin width
+  outset: (
+    left: 0in,
+    right: 0in,
+    top: -0in,
+    bottom: 0pt,
+  ),
   breakable: false,
   {
-    image("assets/mobSF_banner.png", width: 100%)
+    // Dynamically scale the user banner to fill width while preserving aspect
+    align(center + horizon, {
+      box(
+        width: 100%,
+        height: 200pt,
+        inset: (x: 100pt, y: 0pt),
+        align(center + horizon, {
+          image(
+            "assets/mobSF_banner.png",
+            width: 100%,
+            height: auto,
+            fit: "contain"
+          )
+          text(size: 16pt, weight: "medium", fill: white, [IOS STATIC ANALYSIS REPORT])
+        })
+      )
+    })
   }
 )
 
@@ -76,34 +99,78 @@
 
 #v(25pt)
 
-// Security Score
+// Security Score - Modern, Subtle Design
 #align(center, {
-  text(weight: "medium", fill: rgb("#4B5563"), size: 10pt, [App Security Score:])
-  v(8pt)
-  text(size: 32pt, weight: "bold", fill: rgb("#F59E0B"), [44/100 (MEDIUM RISK)])
-})
-
-#v(30pt)
-
-// Grade Badge
-#align(center, {
-  box(
-    width: 64pt,
-    height: 64pt,
-    fill: rgb("#EAB308"),
+  block(
+    width: 78%,
+    inset: 22pt,
     radius: 8pt,
-    stroke: 2pt + rgb("#CA8A04"),
-    align(center + horizon, text(size: 38pt, weight: "bold", fill: white, [B]))
+    fill: rgb("#FEFEFE"),
+    stroke: 1pt + rgb("#E5E7EB"),
+    {
+      // Horizontal layout with proper alignment
+      align(left, {
+        grid(
+          columns: (52pt, 1fr),
+          column-gutter: 22pt,
+          row-gutter: 0pt,
+          
+          // Compact Grade Badge
+          align(center + horizon, {
+            box(
+              width: 52pt,
+              height: 52pt,
+              fill: rgb("#EAB308"),
+              radius: 6pt,
+              stroke: 1.5pt + rgb("#CA8A04"),
+              align(center + horizon, text(size: 28pt, weight: "bold", fill: white, [B]))
+            )
+          }),
+          
+          // Score Details - vertically centered
+          align(left + horizon, {
+            text(weight: "semibold", fill: rgb("#64748B"), size: 9.5pt, [Security Score])
+            linebreak()
+            v(7pt)
+            // Single-line alignment to keep score and badge perfectly baseline-aligned
+            box(baseline: 0pt, align(horizon, {
+              text(size: 22pt, weight: "bold", fill: rgb("#1A1F28"), [44])
+              h(4pt)
+              text(size: 15pt, weight: "medium", fill: rgb("#9CA3AF"), baseline: -1pt, [/100])
+              h(10pt)
+              box(
+                fill: rgb("#FFF4D7"),
+                outset: (x: 6pt, y: 3pt),
+                radius: 4pt,
+                stroke: 1pt + rgb("#F59E0B").lighten(45%),
+                baseline: -1pt,
+                text(fill: rgb("#D97706"), weight: "semibold", size: 8.5pt, [MEDIUM RISK])
+              )
+            }))
+          })
+        )
+      })
+    }
   )
 })
-
-#v(20pt)
 
 #pagebreak()
 
 // ========================================
 // 2. TECHNICAL SPECIFICATIONS (Pages 2-3)
 // ========================================
+
+#section-header("Findings Severity", icon-name: "chart-pie")
+
+#{
+  severity-summary(counts: (
+    High: 2,
+    Medium: 2,
+    Info: 0,
+    Secure: 1,
+    Hotspot: 0,
+  ))
+}
 
 #section-header("File Information", icon-name: "file-code")
 
@@ -152,8 +219,6 @@
   ),
 )
 
-#pagebreak()
-
 // ========================================
 // 3. PRIMARY BINARY ANALYSIS (Pages 3-4)
 // ========================================
@@ -189,7 +254,6 @@
   ),
 )
 
-#pagebreak()
 
 // ========================================
 // 4. DEPENDENCY ANALYSIS (Pages 4-39)
@@ -268,7 +332,6 @@
   ),
 )
 
-#pagebreak()
 
 // ========================================
 // 5. NETWORK & DOMAIN ANALYSIS (Pages 39-42)
@@ -345,7 +408,6 @@
   ),
 )
 
-#pagebreak()
 
 // ========================================
 // 6. DATA RECONNAISSANCE (Pages 42-43)
@@ -412,7 +474,6 @@
   ),
 )
 
-#pagebreak()
 
 // ========================================
 // 7. AUDIT TRAIL / SCAN LOGS (Pages 43-47)

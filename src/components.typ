@@ -158,13 +158,69 @@
   )
 }
 
+// Findings Severity Summary (Simplified full-width layout)
+#let severity-summary(counts: (:)) = {
+  let order = (
+    ("High", config.colors.high, "triangle-exclamation"),
+    ("Medium", config.colors.warning, "triangle-exclamation"),
+    ("Info", config.colors.info, "circle-info"),
+    ("Secure", config.colors.secure, "check"),
+    ("Hotspot", config.colors.hotspot, "fire-alt"),
+  )
+
+  block(
+    width: 100%,
+    breakable: false,
+    {
+      // Severity bars in a horizontal grid layout - no wrapper card
+      grid(
+        columns: (1fr, 1fr, 1fr, 1fr, 1fr),
+        row-gutter: 0pt,
+        column-gutter: 8pt,
+        align: (center, horizon),
+        ..order.map(((label, color, icon-name)) => {
+          let direct = counts.at(label)
+          let lowered = if direct == none { counts.at(lower(label)) } else { none }
+          let value = if direct != none {
+            direct
+          } else if lowered != none {
+            lowered
+          } else {
+            0
+          }
+          // Severity card
+          block(
+            width: 100%,
+            height: 64pt,
+            inset: (x: 8pt, y: 10pt),
+            fill: color,
+            stroke: 1pt + color.darken(5%),
+            radius: 4pt,
+            {
+              align(center + horizon, {
+                // Icon and label
+                box(height: 9pt, baseline: 12%, image("assets/solid/" + icon-name + ".svg", height: 9pt))
+                h(4pt)
+                text(size: 8pt, weight: "semibold", fill: white, upper(label))
+                v(8pt)
+                // Count
+                text(size: 18pt, weight: "bold", fill: white, str(value))
+              })
+            }
+          )
+        })
+      )
+    }
+  )
+}
+
 // Section Header
 #let section-header(title, extra: none, icon-name: none) = {
   vgap(config.section-spacing * 2)
   set align(left)
 
-  // Title with optional icon
-  block({
+  // Title with optional icon - sticky block prevents page breaks between header and content
+  block(sticky: true, {
     if icon-name != none {
       icon(icon-name, size: 17pt, fill: config.colors.text-primary)
       h(9pt)
@@ -173,10 +229,10 @@
     if extra != none {
       text(size: 16pt, weight: "bold", fill: config.colors.text-primary, " " + extra)
     }
+    v(4pt)
+    hrule
+    v(7pt)
   })
-  v(4pt)
-  hrule
-  v(7pt)
 }
 
 // Key-Value Metadata Block
