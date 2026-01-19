@@ -219,7 +219,7 @@
 
 // Section Header
 #let section-header(title, extra: none, icon-name: none) = {
-  vgap(config.section-spacing * 1.5)
+  vgap(config.section-spacing)
   set align(left)
 
   // Title with optional icon - sticky block prevents page breaks between header and content
@@ -235,7 +235,7 @@
   })
   v(2pt)
   hrule
-  v(4pt)
+  v(3pt)
 }// Key-Value Metadata Block
 #let metadata-block(title: none, data: (:), columns: 1) = {
   vgap(config.entry-spacing)
