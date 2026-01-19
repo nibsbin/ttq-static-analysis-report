@@ -64,12 +64,14 @@
 // --- Configurations ---
 #let config = (
   font: "Arial",  // Changed to sans-serif for technical report readability
-  base-size: 10.5pt,
-  leading: 0.65em, // Global spacing value (vertical rhythm)
-  section-spacing: 11pt,
-  entry-spacing: 8pt,
-  margin: 0.4in,
+  base-size: 10pt,
+  leading: 0.58em, // Global spacing value (vertical rhythm)
+  section-spacing: 8pt,
+  entry-spacing: 6pt,
+  margin: 0.3in,
   table-stroke: 0.75pt + neutral.border,
+  table-inset: (x: 6pt, y: 5pt), // Consistent table cell padding
+  metadata-block-inset: 10pt, // Consistent key-value block padding
 
   // Semantic color system
   colors: (

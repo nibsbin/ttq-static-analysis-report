@@ -38,10 +38,10 @@
 
   box(
     fill: color.lighten(85%),
-    outset: (x: 7pt, y: 3pt),
-    radius: 3.5pt,
-    stroke: 1.2pt + color,
-    text(fill: color.darken(10%), weight: "bold", size: 8pt, upper(level))
+    outset: (x: 5pt, y: 2pt),
+    radius: 3pt,
+    stroke: 1pt + color,
+    text(fill: color.darken(10%), weight: "bold", size: 7.5pt, upper(level))
   )
 }
 
@@ -191,20 +191,23 @@
           // Severity card
           block(
             width: 100%,
-            height: 64pt,
-            inset: (x: 8pt, y: 10pt),
+            height: 46pt,
+            inset: (x: 7pt, y: 8pt),
             fill: color,
             stroke: 1pt + color.darken(5%),
             radius: 4pt,
             {
               align(center + horizon, {
+                v(5pt)
                 // Icon and label
-                box(height: 9pt, baseline: 12%, image("assets/solid/" + icon-name + ".svg", height: 9pt))
+                box(height: 9pt, baseline: 12%, image("assets/solid/" + icon-name + ".svg"))
                 h(4pt)
                 text(size: 8pt, weight: "semibold", fill: white, upper(label))
-                v(8pt)
+
+                v(-8pt)
                 // Count
                 text(size: 18pt, weight: "bold", fill: white, str(value))
+                v(4pt)
               })
             }
           )
@@ -216,26 +219,24 @@
 
 // Section Header
 #let section-header(title, extra: none, icon-name: none) = {
-  vgap(config.section-spacing * 2)
+  vgap(config.section-spacing * 1.5)
   set align(left)
 
   // Title with optional icon - sticky block prevents page breaks between header and content
   block(sticky: true, {
     if icon-name != none {
-      icon(icon-name, size: 17pt, fill: config.colors.text-primary)
-      h(9pt)
+      icon(icon-name, size: 13pt, fill: config.colors.text-primary)
+      h(6pt)
     }
-    text(size: 16pt, weight: "bold", fill: config.colors.text-primary, upper(title))
+    text(size: 12pt, weight: "bold", fill: config.colors.text-primary, upper(title))
     if extra != none {
-      text(size: 16pt, weight: "bold", fill: config.colors.text-primary, " " + extra)
+      text(size: 12pt, weight: "bold", fill: config.colors.text-primary, " " + extra)
     }
-    v(4pt)
-    hrule
-    v(7pt)
   })
-}
-
-// Key-Value Metadata Block
+  v(2pt)
+  hrule
+  v(4pt)
+}// Key-Value Metadata Block
 #let metadata-block(title: none, data: (:), columns: 1) = {
   vgap(config.entry-spacing)
 
@@ -246,7 +247,7 @@
 
   block(
     width: 100%,
-    inset: 14pt,
+    inset: config.metadata-block-inset,
     radius: 5pt,
     stroke: 1pt + config.colors.border,
     fill: config.colors.bg-primary,
@@ -258,8 +259,8 @@
 
       grid(
         columns: (auto, 1fr) * columns,
-        row-gutter: 0.7em,
-        column-gutter: 2.5em,
+        row-gutter: 0.5em,
+        column-gutter: 2em,
         ..items
       )
     }
@@ -329,7 +330,7 @@
   table(
     columns: if columns == auto { final-headers.len() } else { columns },
     stroke: config.table-stroke,
-    inset: (x: 8pt, y: 7.5pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if row == 0 { center + horizon } else { left + horizon }
     },
@@ -373,7 +374,7 @@
   table(
     columns: final-headers.len(),
     stroke: config.table-stroke,
-    inset: (x: 8pt, y: 7pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if row == 0 { center + horizon } else { left + horizon }
     },
@@ -421,7 +422,7 @@
   table(
     columns: (auto, 2.8fr, 0.8fr, 0.9fr, 0.7fr, 0.8fr, 0.8fr, 0.9fr),
     stroke: config.table-stroke,
-    inset: (x: 7pt, y: 7.5pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if col == 0 { center + horizon }
       else if row == 0 { center + horizon }
@@ -464,7 +465,7 @@
   table(
     columns: (auto, 2fr, auto, 3fr),
     stroke: config.table-stroke,
-    inset: (x: 8pt, y: 7.5pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 or col == 2 { center + horizon }
@@ -505,7 +506,7 @@
   table(
     columns: (auto, 1.8fr, 3fr, auto),
     stroke: config.table-stroke,
-    inset: (x: 8pt, y: 7.5pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 or col == 3 { center + horizon }
@@ -552,7 +553,7 @@
   table(
     columns: (auto, 2.5fr, 2fr),
     stroke: config.table-stroke,
-    inset: (x: 8pt, y: 7.5pt),
+    inset: config.table-inset,
     align: (col, row) => {
       if row == 0 { center + horizon }
       else if col == 0 { center + horizon }
