@@ -1,3 +1,9 @@
-pdfs/**.pdf
-*.pdf
-.DS_Store
+.gitignore~*
+.github/
+reference/
+scripts/
+main.pdf
+pdfs/
+**.pdf
+template/
+thumbnail.png
