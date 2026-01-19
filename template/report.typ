@@ -5,31 +5,115 @@
 #show: report
 
 // ========================================
-// 1. HEADER AND SCORECARD (Pages 1-2)
+// 1. COVER PAGE - MobSF BRANDED DESIGN
 // ========================================
 
-#report-header(
-  title: "MobSF",
-  subtitle: "Mobile Security Framework - Static Analysis Report",
-  metadata: (
-    "File Name": "SPOTLITE_v1.0.5.ipa",
-    "App Identifier": "com.example.spotlite",
-    "Scan Date": "July 3, 2025",
-    "MobSF Version": "v3.8.0",
-  ),
+// Dark Hero Header
+#block(
+  width: 100%,
+  height: 180pt,
+  fill: rgb("#3E4149"),
+  inset: 0pt,
+  outset: (x: -0.6in, top: -0.6in),
+  breakable: false,
+  {
+    place(center + horizon, {
+      // Platform Icons
+      align(center, {
+        box(height: 18pt, baseline: 20%, image("../src/assets/solid/mobile-android.svg", height: 18pt))
+        h(8pt)
+        box(height: 18pt, baseline: 20%, image("../src/assets/solid/apple-whole.svg", height: 18pt))
+        h(8pt)
+        box(height: 18pt, baseline: 20%, image("../src/assets/solid/laptop.svg", height: 18pt))
+      })
+
+      v(12pt)
+
+      // MobSF Logo Text
+      text(size: 56pt, weight: "bold", fill: white, [M#text(fill: rgb("#CCCCCC"), [o])B#text(size: 56pt, weight: "bold", [SF])])
+
+      v(8pt)
+
+      // Subtitle
+      text(size: 12pt, weight: "medium", fill: rgb("#D0D4D9"), tracking: 1pt, upper([IOS Static Analysis Report]))
+    })
+  }
 )
 
-#scorecard(
-  score: 44,
-  risk-level: "MEDIUM",
-  findings: (
-    high: 12,
-    warning: 18,
-    info: 45,
-    secure: 8,
-    hotspot: 3,
-  ),
-)
+#v(35pt)
+
+// App Icon and Name
+#align(center, {
+  // App Icon Placeholder
+  box(
+    width: 80pt,
+    height: 80pt,
+    radius: 12pt,
+    stroke: 1pt + rgb("#D0D4D9"),
+    fill: white,
+    align(center + horizon, text(size: 8pt, fill: rgb("#9CA3AF"), [APP ICON]))
+  )
+
+  v(12pt)
+
+  // App Name
+  text(size: 14pt, weight: "medium", fill: rgb("#1A1F28"), [🍎 SPOTLITE (1.0.5)])
+})
+
+#v(25pt)
+
+// File Information Grid
+#align(center, {
+  block(
+    width: 85%,
+    {
+      grid(
+        columns: (auto, 1fr),
+        row-gutter: 8pt,
+        column-gutter: 15pt,
+        align: (left, left),
+
+        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [File Name:]),
+        text(fill: rgb("#2563EB"), size: 9.5pt, [SPOTLITE_v1.0.5.ipa]),
+
+        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [Identifier:]),
+        text(fill: rgb("#2563EB"), size: 9.5pt, [com.example.spotlite]),
+
+        text(weight: "medium", fill: rgb("#4B5563"), size: 9.5pt, [Scan Date:]),
+        text(fill: rgb("#1A1F28"), size: 9.5pt, [July 3, 2025, 9:28 pm]),
+      )
+    }
+  )
+})
+
+#v(25pt)
+
+// Security Score
+#align(center, {
+  text(weight: "medium", fill: rgb("#4B5563"), size: 10pt, [App Security Score:])
+  v(8pt)
+  text(size: 32pt, weight: "bold", fill: rgb("#F59E0B"), [44/100 (MEDIUM RISK)])
+})
+
+#v(30pt)
+
+// Divider
+#line(length: 100%, stroke: 2pt + black)
+
+#v(20pt)
+
+// Grade Badge
+#align(center, {
+  text(weight: "medium", fill: rgb("#4B5563"), size: 10pt, [Grade:])
+  v(10pt)
+  box(
+    width: 60pt,
+    height: 60pt,
+    fill: rgb("#EAB308"),
+    radius: 4pt,
+    align(center + horizon, text(size: 36pt, weight: "bold", fill: white, [B]))
+  )
+})
 
 #pagebreak()
 
@@ -37,7 +121,7 @@
 // 2. TECHNICAL SPECIFICATIONS (Pages 2-3)
 // ========================================
 
-#section-header("File Information")
+#section-header("File Information", icon-name: "file-code")
 
 #metadata-block(
   data: (
@@ -49,7 +133,7 @@
   ),
 )
 
-#section-header("App Information")
+#section-header("App Information", icon-name: "mobile-screen")
 
 #metadata-block(
   data: (
@@ -60,7 +144,7 @@
   ),
 )
 
-#section-header("Build & Platform Information")
+#section-header("Build & Platform Information", icon-name: "gear")
 
 #metadata-block(
   data: (
@@ -73,7 +157,7 @@
   ),
 )
 
-#section-header("Binary Information")
+#section-header("Binary Information", icon-name: "microchip")
 
 #metadata-block(
   data: (
@@ -90,22 +174,22 @@
 // 3. PRIMARY BINARY ANALYSIS (Pages 3-4)
 // ========================================
 
-#section-header("IPA Binary Code Analysis")
+#section-header("IPA Binary Code Analysis", icon-name: "bug")
 
 #security-table(
-  headers: ("No", "Issue", "Severity", "Standards", "Description"),
-  severity-column: 2,
+  headers: ("Issue", "Severity", "Standards", "Description"),
+  severity-column: 1,
   rows: (
-    ("1", "Insecure Random Function", "high", "CWE-330", "App uses insecure random number generation (rand, srand detected)"),
-    ("2", "Weak Crypto Algorithm", "high", "CWE-327", "MD5 hashing detected in binary"),
-    ("3", "SQL Injection Risk", "warning", "CWE-89", "Unsafe SQL query construction detected"),
-    ("4", "Hardcoded Encryption Key", "high", "CWE-321", "Potential hardcoded crypto key found"),
-    ("5", "Memory Corruption Risk", "warning", "CWE-119", "Unsafe buffer operations (strcpy, strcat) detected"),
-    ("6", "Information Disclosure", "info", "CWE-532", "NSLog statements present in production binary"),
+    ("Insecure Random Function", "high", "CWE-330", "App uses insecure random number generation (rand, srand detected)"),
+    ("Weak Crypto Algorithm", "high", "CWE-327", "MD5 hashing detected in binary"),
+    ("SQL Injection Risk", "warning", "CWE-89", "Unsafe SQL query construction detected"),
+    ("Hardcoded Encryption Key", "high", "CWE-321", "Potential hardcoded crypto key found"),
+    ("Memory Corruption Risk", "warning", "CWE-119", "Unsafe buffer operations (strcpy, strcat) detected"),
+    ("Information Disclosure", "info", "CWE-532", "NSLog statements present in production binary"),
   ),
 )
 
-#section-header("IPA Binary Analysis (Security Features)")
+#section-header("IPA Binary Analysis (Security Features)", icon-name: "shield")
 
 #security-table(
   headers: ("Protection", "Status", "Severity", "Description"),
@@ -127,9 +211,10 @@
 // 4. DEPENDENCY ANALYSIS (Pages 4-39)
 // ========================================
 
-#section-header("Framework & Library Analysis")
+#section-header("Framework & Library Analysis", icon-name: "cubes")
 
-#text([This section analyzes all embedded frameworks and dynamic libraries. Below is a sample of key findings:])
+#text(size: 10pt, fill: rgb("#4B5563"), [This section analyzes all embedded frameworks and dynamic libraries. Below is a sample of key findings:])
+#v(6pt)
 
 #binary-table(
   entries: (
@@ -141,7 +226,6 @@
       rpath: "secure",
       code-signature: "secure",
       encrypted: "info",
-      symbols: "warning",
     ),
     (
       path: "Frameworks/libswiftFoundation.dylib",
@@ -151,47 +235,51 @@
       rpath: "secure",
       code-signature: "secure",
       encrypted: "info",
-      symbols: "warning",
     ),
     (
       path: "Frameworks/Alamofire.framework/Alamofire",
-      nx: "secure",
+      nx: "warning",
       stack-canary: "warning",
       arc: "secure",
       rpath: "secure",
-      code-signature: "secure",
-      encrypted: "info",
-      symbols: "info",
+      code-signature: "warning",
+      encrypted: "secure",
     ),
     (
       path: "Frameworks/SDWebImage.framework/SDWebImage",
-      nx: "secure",
-      stack-canary: "secure",
+      nx: "info",
+      stack-canary: "info",
       arc: "secure",
       rpath: "warning",
       code-signature: "secure",
-      encrypted: "info",
-      symbols: "warning",
+      encrypted: "secure",
     ),
     (
       path: "Frameworks/Firebase.framework/Firebase",
       nx: "secure",
-      stack-canary: "secure",
-      arc: "secure",
+      stack-canary: "info",
+      arc: "warning",
       rpath: "secure",
       code-signature: "secure",
       encrypted: "info",
-      symbols: "info",
     ),
     (
       path: "SPOTLITE (Main Binary)",
       nx: "secure",
       stack-canary: "high",
       arc: "secure",
-      rpath: "secure",
+      rpath: "info",
       code-signature: "secure",
       encrypted: "warning",
-      symbols: "warning",
+    ),
+    (
+      path: "Frameworks/Alamofire.framework",
+      nx: "secure",
+      stack-canary: "secure",
+      arc: "secure",
+      rpath: "secure",
+      code-signature: "warning",
+      encrypted: "secure",
     ),
   ),
 )
@@ -202,21 +290,26 @@
 // 5. NETWORK & DOMAIN ANALYSIS (Pages 39-42)
 // ========================================
 
-#section-header("Network Security Analysis")
+#section-header("Network Security Analysis", icon-name: "network-wired")
 
 #block(
   width: 100%,
-  inset: 10pt,
-  stroke: 1pt + red,
-  fill: rgb("#FFF3CD"),
+  inset: 12pt,
+  stroke: 1.5pt + rgb("#DC2626"),
+  fill: rgb("#FEF3C7"),
+  radius: 3pt,
   [
-    *⚠ WARNING: OFAC Sanctioned Countries*
-    
+    #box(height: 14pt, baseline: 17%, image("../src/assets/solid/triangle-exclamation.svg", height: 14pt))
+    #h(7pt)
+    #text(size: 11pt, weight: "bold", fill: rgb("#DC2626"), [WARNING: OFAC Sanctioned Countries])
+
+    #v(5pt)
+
     This application communicates with domains located in or associated with OFAC sanctioned countries. This may violate compliance requirements.
   ]
 )
 
-#section-header("Domain Malware Check")
+#section-header("Domain Malware Check", icon-name: "globe")
 
 #domain-table(
   domains: (
@@ -274,12 +367,13 @@
 // 6. DATA RECONNAISSANCE (Pages 42-43)
 // ========================================
 
-#section-header("Sensitive Data Discovery")
+#section-header("Sensitive Data Discovery", icon-name: "magnifying-glass")
 
 #recon-table(
   title: "Email Addresses Found",
   item-label: "Email",
   source-label: "Source File",
+  icon-name: "envelope",
   items: (
     (
       value: "support@spotlite.app",
@@ -300,6 +394,7 @@
   title: "URLs Found",
   item-label: "URL",
   source-label: "Source File",
+  icon-name: "link",
   items: (
     (
       value: "https://api.spotlite.app/v1/",
@@ -320,6 +415,7 @@
   title: "API Keys & Secrets",
   item-label: "Type",
   source-label: "Location",
+  icon-name: "key",
   items: (
     (
       value: "Firebase API Key (Partial): AIza*********************",
@@ -338,7 +434,7 @@
 // 7. AUDIT TRAIL / SCAN LOGS (Pages 43-47)
 // ========================================
 
-#section-header("Scan Execution Log")
+#section-header("Scan Execution Log", icon-name: "clipboard-list")
 
 #log-table(
   logs: (
@@ -422,9 +518,9 @@
 #v(1fr)
 
 #align(center, {
-  text(size: 8pt, fill: gray, [
+  text(size: 8.5pt, fill: rgb("#6B7280"), [
     Report Generated by MobSF v3.8.0 • Mobile Security Framework
-    
+
     © 2025 MobSF Project • https://github.com/MobSF/Mobile-Security-Framework-MobSF
   ])
 })

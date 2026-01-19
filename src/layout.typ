@@ -9,14 +9,14 @@
   // Light backgrounds - clean whites and off-whites
   bg-dark: rgb("#FFFFFF"),      // Pure white for main background
   bg-darker: rgb("#F8F9FA"),    // Slightly off-white for subtle contrast
-  bg-card: rgb("#F5F5F5"),      // Light gray for card/panel backgrounds
-  
+  bg-card: rgb("#F6F6F6"),      // Light gray for card/panel backgrounds
+
   // Grays for UI elements
-  border: rgb("#D1D5DB"),       // Medium gray for borders
+  border: rgb("#D0D4D9"),       // Medium gray for borders
   divider: rgb("#E5E7EB"),      // Light gray for subtle dividers
-  
+
   // Text hierarchy - dark colors for high contrast
-  text-primary: rgb("#1F2937"),    // Near-black for main text
+  text-primary: rgb("#1A1F28"),    // Near-black for main text
   text-secondary: rgb("#4B5563"), // Medium gray for secondary text
   text-muted: rgb("#9CA3AF"),     // Light gray for tertiary/disabled text
 )
@@ -24,9 +24,9 @@
 // Secondary Palette (UI Elements - 30%)
 #let secondary = (
   // Light grays for non-critical UI
-  surface: rgb("#F3F4F6"),      // Table headers, sidebars
+  surface: rgb("#EBEEF1"),      // Table headers, sidebars
   surface-hover: rgb("#E5E7EB"), // Hover states
-  
+
   // Blue for links and interactive elements
   link: rgb("#2563EB"),         // Strong blue for hyperlinks
   link-hover: rgb("#1D4ED8"),   // Darker blue on hover
@@ -58,24 +58,24 @@
 // --- Configurations ---
 #let config = (
   font: "Arial",  // Changed to sans-serif for technical report readability
-  base-size: 10pt,
-  leading: 0.5em, // Global spacing value (vertical rhythm)
-  section-spacing: 8pt,
-  entry-spacing: 6pt,
-  margin: 0.5in,
-  table-stroke: 0.5pt + neutral.border,
-  
+  base-size: 10.5pt,
+  leading: 0.65em, // Global spacing value (vertical rhythm)
+  section-spacing: 11pt,
+  entry-spacing: 8pt,
+  margin: 0.6in,
+  table-stroke: 0.75pt + neutral.border,
+
   // Semantic color system
   colors: (
     // Severity/Status colors
     ..severity-colors,
-    
+
     // Neutral colors for backgrounds and text
     neutral: neutral,
-    
+
     // Secondary UI colors
     secondary: secondary,
-    
+
     // Quick access semantic aliases
     bg-primary: neutral.bg-card,
     bg-secondary: secondary.surface,
@@ -94,23 +94,24 @@
   set page(
     paper: "us-letter",
     margin: config.margin,
-    numbering: "1",
-    number-align: center,
+    numbering: "1 / 1",
+    number-align: center + bottom,
   )
 
   set text(
     font: config.font,
     size: config.base-size,
+    fill: config.colors.text-primary,
   )
 
   set par(
     leading: config.leading,
     justify: false,
-    spacing: config.leading, // Space between paragraphs
+    spacing: config.leading * 1.65, // Space between paragraphs
   )
 
   // Enforce global block spacing for vertical rhythm
-  set block(above: config.leading, below: config.leading)
+  set block(above: config.leading * 1.2, below: config.leading * 1.2)
   set list(spacing: config.leading)
 
   // Hyperlinks should use semantic link color
