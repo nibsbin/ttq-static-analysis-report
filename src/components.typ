@@ -1,53 +1,76 @@
 // components.typ
-#import "layout.typ": config, vgap
+#import "layout.typ": config, vgap, get-severity, validate-severity, validate-column-index
 
 // --- Utility Functions ---
 
-// Icon loader helper
-#let icon(name, size: 12pt, fill: none) = {
+/// Load an icon from the assets directory.
+///
+/// Parameters:
+/// - name: Icon filename (without extension)
+/// - size: Icon height (default: 12pt)
+/// - fill: Icon color (default: text-primary)
+/// - variant: Icon set to use: "solid", "regular", or "brands" (default: "solid")
+///
+/// Returns: A box containing the icon image
+#let icon(
+  name, 
+  size: config.icon.default-size,
+  fill: none,
+  variant: config.icon.default-variant,
+) = {
   let icon-fill = if fill != none { fill } else { config.colors.text-primary }
+  let path = "assets/" + variant + "/" + name + ".svg"
+  
   box(
     height: size,
-    baseline: 17%,
-    image("assets/solid/" + name + ".svg", height: size)
+    baseline: config.icon.baseline,
+    image(path, height: size)
   )
 }
 
-// Horizontal Rule
+/// Horizontal rule for section dividers.
+///
+/// Returns: A horizontal line with header accent color
 #let hrule = {
   line(length: 100%, stroke: 2pt + config.colors.header-accent)
 }
 
-// Severity Badge - Returns colored text based on severity level
+/// Create a severity badge with appropriate color and styling.
+///
+/// Parameters:
+/// - level: Severity level (case-insensitive: "high", "medium", "warning", "info", "secure", "hotspot")
+///
+/// Returns: A centered box with colored badge
 #let severity-badge(level) = {
-  let color = if level == "high" or level == "High" {
-    config.colors.high
-  } else if level == "warning" or level == "Warning" {
-    config.colors.warning
-  } else if level == "info" or level == "Info" {
-    config.colors.info
-  } else if level == "secure" or level == "Secure" {
-    config.colors.secure
-  } else if level == "hotspot" or level == "Hotspot" {
-    config.colors.hotspot
-  } else if level == "medium" or level == "Medium" {
-    config.colors.warning
-  } else {
-    black
-  }
-
+  let sev = get-severity(level)
+  
   align(center, box(
-    fill: color.lighten(85%),
-    outset: (x: 5pt, y: 2pt),
-    radius: 3pt,
-    stroke: 1pt + color,
-    text(fill: color.darken(10%), weight: "bold", size: 7.5pt, upper(level))
+    fill: sev.color.lighten(85%),
+    outset: config.badge.padding,
+    radius: config.badge.radius,
+    stroke: 1pt + sev.color,
+    text(
+      fill: sev.color.darken(10%),
+      weight: "bold",
+      size: config.badge.font-size,
+      upper(sev.label)
+    )
   ))
 }
 
 // --- Component Exports ---
 
-// Report Header with Branding
+/// Create a report header with branding, title, and metadata.
+///
+/// Parameters:
+/// - title: Main report title (default: "Security Analysis Report")
+/// - subtitle: Optional subtitle text (default: none)
+/// - app-name: Application name (default: "")
+/// - app-icon: Optional application icon (default: none)
+/// - metadata: Dictionary of key-value pairs to display (default: (:))
+/// - banner: Optional banner image path (default: none)
+///
+/// Returns: A formatted header block
 #let report-header(
   title: "Security Analysis Report",
   subtitle: none,
@@ -113,7 +136,14 @@
   }
 }
 
-// Security Scorecard
+/// Display a security scorecard with score and findings summary.
+///
+/// Parameters:
+/// - score: Security score (0-100)
+/// - risk-level: Risk level label (e.g., "HIGH", "MEDIUM", "LOW")
+/// - findings: Dictionary of finding categories and their counts
+///
+/// Returns: A formatted scorecard block
 #let scorecard(score: 0, risk-level: "UNKNOWN", findings: (:)) = {
   vgap(config.section-spacing)
 
@@ -158,55 +188,48 @@
   )
 }
 
-// Findings Severity Summary (Simplified full-width layout)
+/// Display a horizontal summary grid of severity counts.
+///
+/// Parameters:
+/// - counts: Dictionary mapping severity levels to counts (e.g., (high: 5, medium: 3))
+///
+/// Returns: A grid block with severity cards
 #let severity-summary(counts: (:)) = {
-  let order = (
-    ("High", config.colors.high, "triangle-exclamation"),
-    ("Medium", config.colors.warning, "triangle-exclamation"),
-    ("Info", config.colors.info, "circle-info"),
-    ("Secure", config.colors.secure, "check"),
-    ("Hotspot", config.colors.hotspot, "fire-alt"),
-  )
-
+  let order = ("high", "medium", "info", "secure", "hotspot")
+  
   block(
     width: 100%,
     breakable: false,
     {
       // Severity bars in a horizontal grid layout - no wrapper card
       grid(
-        columns: (1fr, 1fr, 1fr, 1fr, 1fr),
+        columns: (1fr,) * order.len(),
         row-gutter: 0pt,
         column-gutter: 8pt,
         align: (center, horizon),
-        ..order.map(((label, color, icon-name)) => {
-          let direct = counts.at(label)
-          let lowered = if direct == none { counts.at(lower(label)) } else { none }
-          let value = if direct != none {
-            direct
-          } else if lowered != none {
-            lowered
-          } else {
-            0
-          }
+        ..order.map(level => {
+          let sev = get-severity(level)
+          let count = counts.at(level, default: counts.at(sev.label, default: 0))
+          
           // Severity card
           block(
             width: 100%,
             height: 46pt,
             inset: (x: 7pt, y: 8pt),
-            fill: color,
-            stroke: 1pt + color.darken(5%),
+            fill: sev.color,
+            stroke: 1pt + sev.color.darken(5%),
             radius: 4pt,
             {
               align(center + horizon, {
                 v(5pt)
                 // Icon and label
-                box(height: 9pt, baseline: 12%, image("assets/solid/" + icon-name + ".svg"))
+                icon(sev.icon, size: 9pt, fill: white)
                 h(4pt)
-                text(size: 8pt, weight: "semibold", fill: white, upper(label))
+                text(size: 8pt, weight: "semibold", fill: white, upper(sev.label))
 
                 v(-8pt)
                 // Count
-                text(size: 18pt, weight: "bold", fill: white, str(value))
+                text(size: 18pt, weight: "bold", fill: white, str(count))
                 v(4pt)
               })
             }
@@ -217,7 +240,14 @@
   )
 }
 
-// Section Header
+/// Create a section header with optional icon.
+///
+/// Parameters:
+/// - title: Section title text
+/// - extra: Optional extra text to append to title (default: none)
+/// - icon-name: Optional icon name (default: none)
+///
+/// Returns: A formatted section header with horizontal rule
 #let section-header(title, extra: none, icon-name: none) = {
   vgap(config.section-spacing)
   set align(left)
@@ -239,7 +269,14 @@
 
 }
 
-// Key-Value Metadata Block
+/// Display a key-value metadata block.
+///
+/// Parameters:
+/// - title: Optional block title (default: none)
+/// - data: Dictionary of key-value pairs to display
+/// - columns: Number of columns for the grid layout (default: 1)
+///
+/// Returns: A formatted metadata block
 #let metadata-block(title: none, data: (:), columns: 1) = {
   vgap(config.entry-spacing)
 
@@ -273,7 +310,16 @@
   v(4pt)
 }
 
-// Base table wrapper - provides consistent styling and breaking behavior
+/// Base table wrapper with consistent styling.
+///
+/// Parameters:
+/// - columns: Column width specification (auto or array of sizes)
+/// - headers: Array of header cells
+/// - rows: Array of row cells (flattened)
+/// - align: Alignment function or auto (default: auto)
+/// - severity-columns: Array of column indices containing severity badges (default: ())
+///
+/// Returns: A formatted table block
 #let base-table(
   columns: auto,
   headers: (),
@@ -308,8 +354,28 @@
   })
 }
 
-// Unified Data Table Component
-// Flexible table with auto-numbering, severity highlighting, and customizable columns
+/// Create a flexible data table with optional auto-numbering and severity highlighting.
+///
+/// Parameters:
+/// - headers: Array of column header strings
+/// - rows: Array of row data (each row is an array)
+/// - columns: Column width specification (auto or array of sizes) (default: auto)
+/// - severity-column: Index of column to apply severity badge, or none to disable (default: none)
+/// - auto-number: Add automatic row numbering column (default: false)
+/// - title: Optional table title shown above table (default: none)
+/// - transform: Optional function to transform row data (default: none)
+///
+/// Returns: A formatted table block
+///
+/// Example:
+/// ```typst
+/// #data-table(
+///   headers: ("Issue", "Severity"),
+///   rows: ((\"SQL Injection\", \"high\"), (\"XSS\", \"medium\")),
+///   severity-column: 1,
+///   auto-number: true,
+/// )
+/// ```
 #let data-table(
   headers: (),
   rows: (),
@@ -319,6 +385,14 @@
   title: none,
   transform: none,  // Optional row transformation function
 ) = {
+  // Validation
+  assert(headers.len() > 0, message: "Headers cannot be empty")
+  
+  // Validate severity-column index
+  if severity-column != none {
+    validate-column-index(severity-column, headers.len(), param-name: "severity-column")
+  }
+  
   vgap(config.entry-spacing)
   
   if rows.len() == 0 { return }
@@ -376,8 +450,14 @@
   )
 }
 
-// Convenience wrappers for common table types (backward compatibility)
-
+/// Create a security findings table with auto-numbering.
+///
+/// Parameters:
+/// - headers: Array of column header strings
+/// - rows: Array of row data (each row is an array)
+/// - severity-column: Index of column to apply severity badge, or none (default: none)
+///
+/// Returns: A formatted security table
 #let security-table(headers: (), rows: (), severity-column: none) = {
   vgap(config.entry-spacing)
 
@@ -407,7 +487,17 @@
   )
 }
 
-#let binary-table(entries: ()) = {
+/// Create a table displaying binary security features.
+///
+/// Parameters:
+/// - entries: Array of dictionaries with keys: path, nx, stack-canary, arc, rpath, code-signature, encrypted
+/// - columns: Column width specification (default: pre-configured)
+///
+/// Returns: A formatted binary analysis table
+#let binary-table(
+  entries: (),
+  columns: (auto, 2.8fr, 0.8fr, 0.9fr, 0.7fr, 0.8fr, 0.8fr, 0.9fr),
+) = {
   vgap(config.entry-spacing)
 
   if entries.len() == 0 { return }
@@ -435,7 +525,7 @@
   )).flatten()
 
   base-table(
-    columns: (auto, 2.8fr, 0.8fr, 0.9fr, 0.7fr, 0.8fr, 0.8fr, 0.9fr),
+    columns: columns,
     headers: headers,
     rows: rows,
     severity-columns: (2, 3, 4, 5, 6, 7), // All badge columns
@@ -448,7 +538,17 @@
   )
 }
 
-#let domain-table(domains: ()) = {
+/// Create a table displaying domain information.
+///
+/// Parameters:
+/// - domains: Array of dictionaries with keys: url, status, geolocation (optional)
+/// - columns: Column width specification (default: pre-configured)
+///
+/// Returns: A formatted domain table
+#let domain-table(
+  domains: (),
+  columns: (auto, 2fr, auto, 3fr),
+) = {
   vgap(config.entry-spacing)
 
   if domains.len() == 0 { return }
@@ -468,7 +568,7 @@
   )).flatten()
 
   base-table(
-    columns: (auto, 2fr, auto, 3fr),
+    columns: columns,
     headers: headers,
     rows: rows,
     align: (col, row) => {
@@ -479,7 +579,17 @@
   )
 }
 
-#let log-table(logs: ()) = {
+/// Create a table displaying log entries.
+///
+/// Parameters:
+/// - logs: Array of dictionaries with keys: timestamp, event, status
+/// - columns: Column width specification (default: pre-configured)
+///
+/// Returns: A formatted log table
+#let log-table(
+  logs: (),
+  columns: (auto, 1.8fr, 3fr, auto),
+) = {
   vgap(config.entry-spacing)
 
   if logs.len() == 0 { return }
@@ -498,7 +608,7 @@
   )).flatten()
 
   base-table(
-    columns: (auto, 1.8fr, 3fr, auto),
+    columns: columns,
     headers: headers,
     rows: rows,
     align: (col, row) => {
@@ -509,7 +619,25 @@
   )
 }
 
-#let recon-table(title: "Discovered Items", items: (), item-label: "Item", source-label: "Source", icon-name: none) = {
+/// Create a reconnaissance table for discovered items.
+///
+/// Parameters:
+/// - title: Table title (default: "Discovered Items")
+/// - items: Array of dictionaries with keys: value, source
+/// - item-label: Column label for items (default: "Item")
+/// - source-label: Column label for sources (default: "Source")
+/// - icon-name: Optional icon for the title (default: none)
+/// - columns: Column width specification (default: pre-configured)
+///
+/// Returns: A formatted reconnaissance table
+#let recon-table(
+  title: "Discovered Items",
+  items: (),
+  item-label: "Item",
+  source-label: "Source",
+  icon-name: none,
+  columns: (auto, 2.5fr, 2fr),
+) = {
   vgap(config.entry-spacing * 1.2)
 
   if title != none {
@@ -534,7 +662,7 @@
   )).flatten()
 
   base-table(
-    columns: (auto, 2.5fr, 2fr),
+    columns: columns,
     headers: headers,
     rows: rows,
     align: (col, row) => {
